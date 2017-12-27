@@ -22,7 +22,9 @@ def resize_im(im, scale, max_scale=None):
 
 def draw_boxes(img,image_name,boxes,scale):
     base_name = image_name.split('/')[-1]
+    orgi_img = cv2.resize(img, None, None, fx=1.0/scale, fy=1.0/scale, interpolation=cv2.INTER_LINEAR)
     with open('data/results/' + 'res_{}.txt'.format(base_name.split('.')[0]), 'w') as f:
+        index = 0
         for box in boxes:
             if np.linalg.norm(box[0] - box[1]) < 5 or np.linalg.norm(box[3] - box[0]) < 5:
                 continue
@@ -40,10 +42,16 @@ def draw_boxes(img,image_name,boxes,scale):
             max_x = max(int(box[0]/scale),int(box[2]/scale),int(box[4]/scale),int(box[6]/scale))
             max_y = max(int(box[1]/scale),int(box[3]/scale),int(box[5]/scale),int(box[7]/scale))
 
+            roi = orgi_img[min_y:max_y, min_x:max_x]
+            roi_name = base_name.split('.')[0] + "_" + str(index) + "." + base_name.split('.')[1]
+            print(roi_name)
+            cv2.imwrite(os.path.join("data/results", roi_name), roi)
+
             line = ','.join([str(min_x),str(min_y),str(max_x),str(max_y)])+'\r\n'
             f.write(line)
+            index += 1
 
-    img=cv2.resize(img, None, None, fx=1.0/scale, fy=1.0/scale, interpolation=cv2.INTER_LINEAR)
+    img = cv2.resize(img, None, None, fx=1.0/scale, fy=1.0/scale, interpolation=cv2.INTER_LINEAR)
     cv2.imwrite(os.path.join("data/results", base_name), img)
 
 def ctpn(sess, net, image_name):
