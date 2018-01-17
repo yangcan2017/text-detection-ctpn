@@ -11,11 +11,12 @@ class TextDetector:
     def __init__(self):
         self.mode= cfg.TEST.DETECT_MODE
         if self.mode == "H":
+            print self.mode
             self.text_proposal_connector=TextProposalConnector()
         elif self.mode == "O":
+            print self.mode
             self.text_proposal_connector=TextProposalConnectorOriented()
 
-        
     def detect(self, text_proposals,scores,size):
         # 删除得分较低的proposal
         keep_inds=np.where(scores>TextLineCfg.TEXT_PROPOSALS_MIN_SCORE)[0]
